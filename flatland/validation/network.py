@@ -1,5 +1,6 @@
 # -*- coding: utf-8; fill-column: 78 -*-
 """Network address and URL validation."""
+import codecs
 from flatland._compat import PY2
 import re
 if PY2:
@@ -66,7 +67,7 @@ class IsEmail(Validator):
 
     local_part_pattern = None
 
-    domain_pattern = re.compile(r'^(?:[a-z0-9\-]+\.)*[a-z0-9\-]+$',
+    domain_pattern = re.compile('^(?:[a-z0-9\\-]+\.)*[a-z0-9\\-]+$',
                                 re.IGNORECASE)
 
     def validate(self, element, state):
@@ -85,8 +86,8 @@ class IsEmail(Validator):
 
         try:
             # convert domain to ascii
-            domain = domain.encode('idna')
-        except UnicodeError:
+            domain = domain.encode('utf-8').decode('idna')
+        except UnicodeError as ex:
             return self.note_error(element, state, 'invalid')
 
         if len(domain) > 253:

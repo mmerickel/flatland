@@ -7,7 +7,7 @@ import sys
 
 from nose.tools import eq_, assert_raises, raises
 
-from flatland._compat import long_type
+from flatland._compat import long_type, text_type
 
 
 __all__ = ['asciistr', 'assert_raises', 'eq_', 'raises', 'fails',
@@ -42,9 +42,9 @@ def fails(reason):
 
 def udict(*dictionary, **kwargs):
     "Return a dict with unicode keys. A stand-in for the dict constructor."
-    kwargs = dict((k.decode('ascii'), v) for k, v in kwargs.items())
+    kwargs = dict((text_type(k), v) for k, v in kwargs.items())
     if dictionary:
-        base = dict((k.decode('ascii'), v) for k, v in dictionary[0].items())
+        base = dict((text_type(k), v) for k, v in dictionary[0].items())
         base.update(kwargs)
         return base
     else:

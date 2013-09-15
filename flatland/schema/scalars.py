@@ -143,8 +143,9 @@ class Scalar(Element):
         if default is not Unspecified:
             self.set(default)
 
-    def __nonzero__(self):
+    def __bool__(self):
         return True if self.u and self.value else False
+    __nonzero__ = __bool__
 
     def __str__(self):
         if PY2:

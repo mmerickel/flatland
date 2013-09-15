@@ -1,6 +1,6 @@
 from weakref import WeakKeyDictionary
 
-from flatland._compat import iterkeys, itervalues
+from flatland._compat import PY2, iteritems
 from flatland.util import symbol
 
 
@@ -9,23 +9,36 @@ Deleted = symbol('deleted')
 
 class DictLike(object):
 
-    def iteritems(self):  # pragma: nocover
-        raise NotImplementedError
+    if PY2:
+        def iteritems(self):  # pragma: nocover
+            raise NotImplementedError
 
-    def items(self):
-        return list(self.iteritems())
+        def items(self):
+            return list(self.iteritems())
 
-    def iterkeys(self):
-        return (item[0] for item in self.iteritems())
+        def iterkeys(self):
+            return (item[0] for item in self.iteritems())
 
-    def keys(self):
-        return list(iterkeys(self))
+        def keys(self):
+            return list(self.iterkeys())
 
-    def itervalues(self):
-        return (item[1] for item in self.iteritems())
+        def itervalues(self):
+            return (item[1] for item in self.iteritems())
 
-    def values(self):
-        return list(itervalues(self))
+        def values(self):
+            return list(self.itervalues())
+    else:
+        def items(self):  # pragma: nocover
+            raise NotImplementedError
+        iteritems = items
+
+        def keys(self):
+            return (item[0] for item in self.iteritems())
+        iterkeys = keys
+
+        def values(self):
+            return (item[1] for item in self.iteritems())
+        itervalues = values
 
     def get(self, key, default=None):
         try:
@@ -40,10 +53,11 @@ class DictLike(object):
         raise NotImplementedError
 
     def __contains__(self, key):
-        return key in iterkeys(self)
+        return key in self.iterkeys()
 
-    def __nonzero__(self):
+    def __bool__(self):
         return bool(self.copy())
+    __nonzero__ = __bool__
 
     def __eq__(self, other):
         return self.copy() == other
@@ -84,7 +98,7 @@ class _TypeLookup(DictLike):
 
     def clear(self):
         frame = self._base_frame
-        for key in iterkeys(self):
+        for key in self.iterkeys():
             frame[key] = Deleted
 
     def pop(self, key, *default):
@@ -107,11 +121,13 @@ class _TypeLookup(DictLike):
     def iteritems(self):
         seen = set()
         for frame in self._frames():
-            for key, value in frame.iteritems():
+            for key, value in iteritems(frame):
                 if key not in seen:
                     seen.add(key)
                     if value is not Deleted:
                         yield (key, value)
+    if not PY2:
+        items = iteritems
 
     def _frames(self):
         for cls in self.base.__mro__:
@@ -196,11 +212,11 @@ class _InstanceLookup(DictLike):
 
     def iteritems(self):
         seen = set()
-        for key, value in self.local.iteritems():
+        for key, value in iteritems(self.local):
             seen.add(key)
             if value is not Deleted:
                 yield key, value
-        for key, value in self.class_lookup.iteritems():
+        for key, value in iteritems(self.class_lookup):
             if key not in seen:
                 seen.add(key)
                 if value is not Deleted:  # pragma: nocover  (coverage bug)

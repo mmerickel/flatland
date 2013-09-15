@@ -2,9 +2,15 @@ import sys
 
 from setuptools import setup, find_packages
 
-if sys.version_info[0] < 2 and sys.version_info[1] < 6:
-    print "Python 2.6 or higher is required."
-    sys.exit(1)
+py_version = sys.version_info[:2]
+PY2 = py_version[0] == 2
+
+if PY2:
+    if py_version < (2, 6):
+        raise RuntimeError('Python 2.6 or higher is required.')
+else:
+    if py_version < (3, 3):
+        raise RuntimeError('Python 3.3 or higher is required.')
 
 with open('README') as fp:
     long_desc = fp.read()

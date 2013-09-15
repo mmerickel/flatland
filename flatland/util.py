@@ -325,8 +325,9 @@ class Maybe(object):
         else:
             raise TypeError(type(other).__name__)
 
-    def __nonzero__(self):
+    def __bool__(self):
         raise NotImplementedError()
+    __nonzero__ = __bool__
 
     def __str__(self):
         return 'Maybe'
@@ -414,3 +415,12 @@ class symbol(object):
 
 
 Unspecified = symbol('Unspecified')
+
+def decode_repr(x):
+    """Create a unicode string representation (as a unicode string)
+    for py2 and py3 that looks the same: u'example'
+    """
+    r = repr(x)
+    if PY2:
+        return r.decode('raw_unicode_escape')
+    return 'u' + r

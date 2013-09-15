@@ -73,8 +73,8 @@ else:
     getattr_py2 = getattr
     hasattr_py2 = hasattr
     setattr_py2 = setattr
-    iterkeys = lambda d: iter(d.keys())
-    itervalues = lambda d: iter(d.values())
-    iteritems = lambda d: iter(d.items())
+    iterkeys = lambda d: d.keys()
+    itervalues = lambda d: d.values()
+    iteritems = lambda d: d.items()
     xrange = range
 string_types = (bytestring_type, text_type)

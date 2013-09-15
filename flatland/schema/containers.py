@@ -8,7 +8,9 @@ from flatland._compat import (
     iteritems,
     iterkeys,
     itervalues,
+    long_type,
     bytestring_type,
+    text_type,
     xrange,
     )
 from flatland.util import (
@@ -19,6 +21,7 @@ from flatland.util import (
     keyslice_pairs,
     re_uescape,
     to_pairs,
+    decode_repr,
     )
 from flatland.signals import element_set
 from .base import Element, Unevaluated, Slot, validate_element
@@ -380,7 +383,7 @@ class Sequence(Container, list):
     def u(self):
         return u'[%s]' % u', '.join(
             element.u if isinstance(element, Container)
-                      else repr(element.u).decode('raw_unicode_escape')
+                      else decode_repr(repr)
             for element in self.children)
 
 
@@ -451,10 +454,7 @@ class List(Sequence):
 
     def _new_slot(self, value=Unspecified):
         """Wrap *value* in a Slot named as the element's index in the list."""
-        # avoid direct text_type() here so that test suite unicode coercion
-        # detector isn't triggered
-        name = bytestring_type(len(self)).decode('ascii')
-        return self.slot_type(name=name,
+        return self.slot_type(name=text_type(len(self)),
                               parent=self,
                               element=self._as_element(value))
 
@@ -557,7 +557,7 @@ class List(Sequence):
             if not m:
                 continue
             try:
-                index = long(m.group(1))
+                index = long_type(m.group(1))
             except TypeError:
                 # Ignore keys with outrageously large indexes- they
                 # aren't valid data for us.
@@ -715,10 +715,11 @@ class MultiValue(Array, Scalar):
     value = property(value, _set_value)
     del _set_value
 
-    def __nonzero__(self):
+    def __bool__(self):
         # this is a little troubling, given that it may not match the
         # appearance of the element in a scalar context.
-        return len(self)
+        return bool(len(self))
+    __nonzero__ = __bool__
 
 
 class Mapping(Container, dict):
@@ -868,10 +869,10 @@ class Mapping(Container, dict):
     def u(self):
         """A string repr of the element."""
         pairs = ((key, value.u if isinstance(value, Container)
-                               else repr(value.u).decode('raw_unicode_escape'))
+                               else decode_repr(value.u))
                   for key, value in iteritems(self))
         return u'{%s}' % u', '.join(
-            u"%s: %s" % (repr(k).decode('raw_unicode_escape'), v)
+            u"%s: %s" % (decode_repr(k), v)
             for k, v in pairs)
 
     @property

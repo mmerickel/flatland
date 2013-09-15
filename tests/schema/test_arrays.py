@@ -158,6 +158,7 @@ def test_mutation():
     el.pop()
     eq_(el.value, [u'f'])
     eq_(el[0].u, u'f')
+    import pdb; pdb.set_trace()
     eq_(el.u.encode('ascii'), repr([u'f']))
 
     del el[:]
