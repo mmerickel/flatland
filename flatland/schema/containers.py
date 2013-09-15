@@ -154,7 +154,7 @@ class Sequence(Container, list):
     prune_empty = True
     """If true, skip missing index numbers in :meth:`set_flat`. Default True.
 
-    See `Sequences`_ for more information.
+    See :ref:`Sequences` for more information.
 
     """
 

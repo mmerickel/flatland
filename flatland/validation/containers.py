@@ -21,7 +21,7 @@ class NotDuplicated(Validator):
 
     .. testcode::
 
-      import flatland
+      from flatland import List, String
       from flatland.validation import NotDuplicated
 
       validator = NotDuplicated(failure="Please enter each color only once.")
@@ -307,8 +307,9 @@ class SetWithKnownFields(Validator):
       from flatland import Dict, Integer
       from flatland.validation import SetWithKnownFields
 
-      schema = Dict.of(Integer.named('x'), Integer.named('y')).\\
+      schema = Dict.of(Integer.named('x')).\\
                     validated_by(SetWithKnownFields())
+      schema.policy = None
       element = schema()
 
       element.set({'x': 123})
@@ -382,6 +383,7 @@ class SetWithAllFields(Validator):
 
       schema = Dict.of(Integer.named('x'), Integer.named('y')).\\
                     validated_by(SetWithAllFields())
+      schema.policy = None
       element = schema()
 
       element.set({'x': 123, 'y': 456})

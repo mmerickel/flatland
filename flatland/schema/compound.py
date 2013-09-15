@@ -1,7 +1,7 @@
 from functools import wraps
 import operator
 
-from flatland._compat import PY2, identifier_transform, text_type
+from flatland._compat import PY2, identifier_transform, text_type, string_types
 from flatland.exc import AdaptationError
 from flatland.signals import element_set
 from flatland.util import (
@@ -312,7 +312,7 @@ class JoinedString(Array, String):
         self.raw = value
         if isinstance(value, (list, tuple)):
             values = value
-        elif not isinstance(value, text_type):
+        elif not isinstance(value, string_types):
             values = list(value)
         elif self.separator_regex:
             # a text regexp separator

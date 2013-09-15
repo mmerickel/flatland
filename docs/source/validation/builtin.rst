@@ -17,8 +17,9 @@ Containers
 Strings
 ~~~~~~~
 
-.. autoclass:: flatland.validation.string.NANPphone
-   :no-members:
+..
+    .. autoclass:: flatland.validation.string.NANPphone
+       :no-members:
 
 
 Numbers
