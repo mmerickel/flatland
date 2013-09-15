@@ -1,30 +1,16 @@
-import os
 import sys
 
-if sys.version_info < (2, 5):
-    print "Python 2.5 or higher is required."
+from setuptools import setup, find_packages
+
+if sys.version_info[0] < 2 and sys.version_info[1] < 6:
+    print "Python 2.6 or higher is required."
     sys.exit(1)
 
-try:
-    from setuptools import setup, find_packages
-    extra_setup = dict(
-        include_package_data=True,
-        zip_safe=True,
-        )
-except ImportError:
-    from distutils.core import setup
-    extra_setup = {}
-    def find_packages(exclude=()):
-        return [w[0].replace('/', '.')
-                for w in os.walk('flatland')
-                if '__init__.py' in w[2]]
-
-import flatland
-version = flatland.__version__
-long_desc = open('README').read()
+with open('README') as fp:
+    long_desc = fp.read()
 
 setup(name="flatland",
-      version=version,
+      version='0.1dev',
       packages=find_packages(exclude=['tests.*', 'tests']),
       author='Jason Kirtland',
       author_email='jek@discorporate.us',
@@ -47,5 +33,12 @@ setup(name="flatland",
                    'Topic :: Software Development :: Libraries'],
       install_requires=[
           'blinker',
-          ],
-      **extra_setup)
+      ],
+      tests_require=[
+          'genshi',
+          'sphinx',
+          'nose',
+      ],
+      include_package_data=True,
+      zip_safe=True,
+      )

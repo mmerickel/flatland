@@ -84,4 +84,6 @@ __all__ = [
     'validator_validated',
     ]
 
-__version__ = 'dev'
+import pkg_resources
+__version__ = pkg_resources.get_distribution('flatland').version
+del pkg_resources
